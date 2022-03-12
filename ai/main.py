@@ -1,68 +1,61 @@
 from math import inf
+
 call_count = 0
 ai = "Y"
 human = "R"
 HEIGHT = 6
 WIDTH = 7
-alpha = inf
-beta = -inf
 
 
 def find_best_move(grid):
-    best_score = -inf
+    value = -inf
     best_move = (0, 0)
-    for i in range(HEIGHT):
+    for i in range(HEIGHT - 1, -1, -1):
         for j in range(WIDTH):
             if grid[i][j] == " ":  # free space available
                 grid[i][j] = ai
-                score = minimax(grid, 0, False, alpha, beta)
+                value = (value, minimax(grid, 0, False))
                 grid[i][j] = " "
-                if score > best_score:
-                    best_score = score
-                    best_move = (i, j)
+                best_move = (i, j)
     return best_move
 
 
-def minimax(grid, depth, is_maximising, alpha, beta):
+def minimax(grid, depth, is_maximising):
     global call_count
     call_count += 1
-    print(call_count)
     result = check_for_win(grid)
+
+    print_grid(grid)
+
     if result == ai:
+        print("AI WINS IN THIS GRID")
         return 1
     elif result == human:
+        print("AI LOSES IN THIS GRID")
         return -1
     elif result == "DRAW":
+        print("DRAW")
         return 0
 
     if is_maximising:
-        best_score = -inf
-        for i in range(HEIGHT):
+        value = -inf
+        for i in range(HEIGHT - 1, -1, -1):
             for j in range(WIDTH):
                 if grid[i][j] == " ":  # free space available
                     grid[i][j] = ai
-                    score = minimax(grid, depth + 1, False, alpha, beta)
+                    (value := max(value, minimax(grid, depth + 1, False)))
                     grid[i][j] = " "
-                    alpha = min(score, alpha)
-                    if beta <= alpha:
-                        break
-                    if score > best_score:
-                        best_score = score
-        return best_score
+        return value
+
     else:
-        best_score = inf
-        for i in range(HEIGHT):
+        value = inf
+        for i in range(HEIGHT - 1, -1, -1):
             for j in range(WIDTH):
                 if grid[i][j] == " ":  # free space available
                     grid[i][j] = human
-                    score = minimax(grid, depth + 1, False, alpha, beta)
+                    (value := min(value, minimax(grid, depth + 1, True)))
                     grid[i][j] = " "
-                    beta = max(score, alpha)
-                    if beta <= alpha:
-                        break
-                    if score < best_score:
-                        best_score = score
-        return best_score
+        return value
 
 
 def four_cont_subarray(arr):
@@ -107,6 +100,14 @@ def check_for_win(grid):
                 == grid[row + 3][col + 3]
             ):
                 return grid[row][col]
+
+    draw = True
+    for row in range(HEIGHT):
+        for col in range(WIDTH):
+            if grid[row][col] == " ":
+                draw = False
+    if draw:
+        return "DRAW"
 
     return False
 
