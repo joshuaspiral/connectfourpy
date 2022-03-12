@@ -1,8 +1,11 @@
 from math import inf
+call_count = 0
 ai = "Y"
 human = "R"
 HEIGHT = 6
 WIDTH = 7
+alpha = inf
+beta = -inf
 
 
 def find_best_move(grid):
@@ -12,7 +15,7 @@ def find_best_move(grid):
         for j in range(WIDTH):
             if grid[i][j] == " ":  # free space available
                 grid[i][j] = ai
-                score = minimax(grid, 0, False)
+                score = minimax(grid, 0, False, alpha, beta)
                 grid[i][j] = " "
                 if score > best_score:
                     best_score = score
@@ -20,8 +23,10 @@ def find_best_move(grid):
     return best_move
 
 
-def minimax(grid, depth, is_maximising):
-    print(depth)
+def minimax(grid, depth, is_maximising, alpha, beta):
+    global call_count
+    call_count += 1
+    print(call_count)
     result = check_for_win(grid)
     if result == ai:
         return 1
@@ -36,8 +41,11 @@ def minimax(grid, depth, is_maximising):
             for j in range(WIDTH):
                 if grid[i][j] == " ":  # free space available
                     grid[i][j] = ai
-                    score = minimax(grid, depth + 1, False)
+                    score = minimax(grid, depth + 1, False, alpha, beta)
                     grid[i][j] = " "
+                    alpha = min(score, alpha)
+                    if beta <= alpha:
+                        break
                     if score > best_score:
                         best_score = score
         return best_score
@@ -47,8 +55,11 @@ def minimax(grid, depth, is_maximising):
             for j in range(WIDTH):
                 if grid[i][j] == " ":  # free space available
                     grid[i][j] = human
-                    score = minimax(grid, depth + 1, False)
+                    score = minimax(grid, depth + 1, False, alpha, beta)
                     grid[i][j] = " "
+                    beta = max(score, alpha)
+                    if beta <= alpha:
+                        break
                     if score < best_score:
                         best_score = score
         return best_score
