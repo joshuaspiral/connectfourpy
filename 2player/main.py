@@ -16,7 +16,6 @@ def check_for_win(grid):
     print('checking for win')
     cols = [[row[i] for row in grid] for i in range(WIDTH)]
     for row in grid:
-        print(row)
         if four_cont_subarray(row) is not False:
             return four_cont_subarray(row)
 
@@ -24,15 +23,15 @@ def check_for_win(grid):
         if four_cont_subarray(col) is not False:
             return four_cont_subarray(col)
 
-#     for row in range(HEIGHT - 3):
-#         for col in range(WIDTH - 3):
-#             if grid[row][col] == grid[row + 2][col + 2] == grid[row + 3][col + 3]:
-#                 return grid[row][col]
+    for row in range(HEIGHT - 3):
+        for col in range(3, WIDTH):
+            if grid[row][col] == grid[row + 1][col - 1] == grid[row + 2][col - 2] == grid[row + 3][col - 3] and grid[row][col] != ' ':
+                return grid[row][col]
 
-#     for row in range(3, HEIGHT):
-#         for col in range(WIDTH - 3):
-#             if grid[row][col] == grid[row + 2][col + 2] == grid[row + 3][col + 3]:
-#                 return grid[row][col]
+    for row in range(HEIGHT - 3):
+        for col in range(WIDTH - 3):
+            if grid[row][col] == grid[row + 1][col + 1] == grid[row + 2][col + 2] == grid[row + 3][col + 3]:
+                return grid[row][col]
 
     return False
   
@@ -62,12 +61,14 @@ def handle_turn(player):
 
 def print_grid(grid):
     print()
-    for row in grid:
-        for col in row:
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
             print('|', end=' ')
-            print(col, end=' ') 
+            print(grid[i][j], end=' ') 
         print('|')
     print('-'*29)
+    print(' ', end='')
+    print('   '.join([str(x) for x in range(1, WIDTH + 1)]))
 
 grid = [[' ' for _ in range(WIDTH)] for x in range(HEIGHT)]
 current_turn = 'Y'
