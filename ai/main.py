@@ -7,12 +7,24 @@ HEIGHT = 6
 WIDTH = 7
 
 
+def is_avail_pos(grid, y, x):
+    if grid[y][x] == " ":
+        if y == HEIGHT - 1:
+            return True
+        elif grid[y + 1][x] != " ":
+            return True
+        else:
+            return False
+    else:
+        return False
+
+
 def find_best_move(grid):
     value = -inf
     best_move = (0, 0)
     for i in range(HEIGHT - 1, -1, -1):
         for j in range(WIDTH):
-            if grid[i][j] == " ":  # free space available
+            if is_avail_pos(grid, i, j):  # free space available
                 grid[i][j] = ai
                 value = (value, minimax(grid, 0, False))
                 grid[i][j] = " "
@@ -25,7 +37,7 @@ def minimax(grid, depth, is_maximising):
     call_count += 1
     result = check_for_win(grid)
 
-    print_grid(grid)
+    print(call_count)
 
     if result == ai:
         print("AI WINS IN THIS GRID")
@@ -41,7 +53,7 @@ def minimax(grid, depth, is_maximising):
         value = -inf
         for i in range(HEIGHT - 1, -1, -1):
             for j in range(WIDTH):
-                if grid[i][j] == " ":  # free space available
+                if is_avail_pos(grid, i, j):  # free space available
                     grid[i][j] = ai
                     (value := max(value, minimax(grid, depth + 1, False)))
                     grid[i][j] = " "
@@ -51,7 +63,7 @@ def minimax(grid, depth, is_maximising):
         value = inf
         for i in range(HEIGHT - 1, -1, -1):
             for j in range(WIDTH):
-                if grid[i][j] == " ":  # free space available
+                if is_avail_pos(grid, i, j):  # free space available
                     grid[i][j] = human
                     (value := min(value, minimax(grid, depth + 1, True)))
                     grid[i][j] = " "
