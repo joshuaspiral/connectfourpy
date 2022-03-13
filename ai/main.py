@@ -6,6 +6,36 @@ human = "R"
 HEIGHT = 6
 WIDTH = 7
 
+def score_pos(grid, piece):
+    score = 0
+    cols = [[row[i] for row in grid] for i in range(WIDTH)]
+    for row in grid:
+        for element in row:
+            if element == piece:
+                score += 1
+
+    for col in cols:
+        for element in col:
+            if element == piece:
+                score += 1
+
+
+    for row in range(HEIGHT - 3):
+        for col in range(3, WIDTH):
+            for i in range(1, 4):
+                if grid[row + i][col - i] == piece:
+                    score += 1
+
+    for row in range(HEIGHT - 3):
+        for col in range(WIDTH - 3):
+            for i in range(1, 4):
+                if grid[row + i][col + i] == piece:
+                    score += 1
+    return score
+
+def is_terminal(grid):
+    return check_for_win(grid)
+
 
 def is_avail_pos(grid, y, x):
     if grid[y][x] == " ":
@@ -19,15 +49,15 @@ def is_avail_pos(grid, y, x):
         return False
 
 
-def find_best_move(grid):
+def find_best_move(grid, depth):
     best_value = -inf
     best_move = (0, 0)
     for i in range(HEIGHT - 1, -1, -1):
         for j in range(WIDTH):
-            print(i, j)
+            # print(i, j)
             if is_avail_pos(grid, i, j):  # free space available
                 grid[i][j] = ai
-                value = minimax(grid, 0, False)
+                value = minimax(grid, depth, True)
                 grid[i][j] = " "
                 if value > best_value:
                     best_value = value
@@ -40,17 +70,19 @@ def minimax(grid, depth, is_maximising):
     call_count += 1
     result = check_for_win(grid)
 
-    # print(call_count)
+    print(call_count)
 
     if result == ai:
         # print("AI WINS IN THIS GRID")
-        return 1
-    elif result == human:
+        return 10000000
+    if result == human:
         # print("AI LOSES IN THIS GRID")
-        return -1
-    elif result == "DRAW":
+        return -10000000
+    if result == "DRAW":
         # print("DRAW")
         return 0
+    if depth == 0:
+        return score_pos(grid, ai)
 
     if is_maximising:
         best_value = -inf
@@ -58,7 +90,7 @@ def minimax(grid, depth, is_maximising):
             for j in range(WIDTH):
                 if is_avail_pos(grid, i, j):  # free space available
                     grid[i][j] = ai
-                    value = minimax(grid, depth + 1, False)
+                    value = minimax(grid, depth - 1, False)
                     grid[i][j] = " "
                     if value > best_value:
                         best_value = value
@@ -70,7 +102,7 @@ def minimax(grid, depth, is_maximising):
             for j in range(WIDTH):
                 if is_avail_pos(grid, i, j):  # free space available
                     grid[i][j] = human
-                    value = minimax(grid, depth + 1, True)
+                    value = minimax(grid, depth - 1, True)
                     grid[i][j] = " "
                     if value < best_value:
                         best_value = value
@@ -177,7 +209,7 @@ while True:
             print_grid(grid)
             break
     else:
-        y, x = find_best_move(grid)
+        y, x = find_best_move(grid, 5)
         grid[y][x] = ai
 
         result = check_for_win(grid)
