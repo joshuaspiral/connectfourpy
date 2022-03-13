@@ -20,15 +20,18 @@ def is_avail_pos(grid, y, x):
 
 
 def find_best_move(grid):
-    value = -inf
+    best_value = -inf
     best_move = (0, 0)
     for i in range(HEIGHT - 1, -1, -1):
         for j in range(WIDTH):
+            print(i, j)
             if is_avail_pos(grid, i, j):  # free space available
                 grid[i][j] = ai
-                value = (value, minimax(grid, 0, False))
+                value = minimax(grid, 0, False)
                 grid[i][j] = " "
-                best_move = (i, j)
+                if value > best_value:
+                    best_value = value
+                    best_move = (i, j)
     return best_move
 
 
@@ -37,37 +40,41 @@ def minimax(grid, depth, is_maximising):
     call_count += 1
     result = check_for_win(grid)
 
-    print(call_count)
+    # print(call_count)
 
     if result == ai:
-        print("AI WINS IN THIS GRID")
+        # print("AI WINS IN THIS GRID")
         return 1
     elif result == human:
-        print("AI LOSES IN THIS GRID")
+        # print("AI LOSES IN THIS GRID")
         return -1
     elif result == "DRAW":
-        print("DRAW")
+        # print("DRAW")
         return 0
 
     if is_maximising:
-        value = -inf
+        best_value = -inf
         for i in range(HEIGHT - 1, -1, -1):
             for j in range(WIDTH):
                 if is_avail_pos(grid, i, j):  # free space available
                     grid[i][j] = ai
-                    (value := max(value, minimax(grid, depth + 1, False)))
+                    value = minimax(grid, depth + 1, False)
                     grid[i][j] = " "
-        return value
+                    if value > best_value:
+                        best_value = value
+        return best_value
 
     else:
-        value = inf
+        best_value = inf
         for i in range(HEIGHT - 1, -1, -1):
             for j in range(WIDTH):
                 if is_avail_pos(grid, i, j):  # free space available
                     grid[i][j] = human
-                    (value := min(value, minimax(grid, depth + 1, True)))
+                    value = minimax(grid, depth + 1, True)
                     grid[i][j] = " "
-        return value
+                    if value < best_value:
+                        best_value = value
+        return best_value
 
 
 def four_cont_subarray(arr):
